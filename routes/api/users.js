@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
+var passport = require('passport');
 var User = require('../../models/user');
 
-/* GET users listing. */
+
 router.get('/', function(req, res, next) {
+
 
   User.find({},function(err, users){
     if(err){
@@ -110,4 +112,32 @@ router.delete('/:userId', function(req,res,next){
 
   });
 });
+//Register a new user
+router.post('/register', function(req,res,next){
+  var data = req.body;
+
+  User.register(new User({
+    username: data.username,
+    email: data.email,
+    first_name: data.first_name,
+    last_name: data.last_name
+  }),
+  data.password,
+function(err, user){
+  if(err){
+    return res.json({
+      success: false,
+      user: req.body,
+      errors: err
+    });
+  }
+    return res.json({
+      success: true,
+      user: user
+    });
+    
+    });
+
+});
+
 module.exports = router;
