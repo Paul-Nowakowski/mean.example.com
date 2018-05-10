@@ -97,15 +97,22 @@ app.use(function(req,res,next){
 
   var whitelist = [
     '/',
-    
-    '/stylesheets/style.css',
     'favicon.ico',
      '/users/login'
   ];
   if(whitelist.indexOf() !== -1){
       return next();
   }
+//alllow access to dynamic end points
+var subs = [
+'/stylesheets/',
+];
 
+for(var sub of subs){
+  if(req.url.substring(0, sub.length)===sub){
+    return next();
+  }
+}
   if(reg.isAuthenticated()){
     return next();
   }
