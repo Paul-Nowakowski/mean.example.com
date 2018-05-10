@@ -3,11 +3,18 @@ var router = express.Router();
 var passport = require('passport');
 var User = require('../../models/user');
 
+var bodyParser = require('body-parser');
+
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({
+extended: false
+
+}));
+
+
 
 router.get('/', function(req, res, next) {
-
-
-  User.find({},function(err, users){
+User.find({},function(err, users){
     if(err){
       return res.json({'success':false,'error': err});
     }

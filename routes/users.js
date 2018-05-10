@@ -5,7 +5,7 @@ var User = require('../models/user');
 
 router.get('/', function(req, res, next) {
   
-  res.render('users/register', { title: 'Create an Account' });
+  res.render('users/index', { title: 'Create an Account' });
 });
 router.get('/login', function(req, res, next){
   res.render('users/login');

@@ -93,20 +93,30 @@ next();
 
 //Session based access control
 app.use(function(req,res,next){
-  //return next();
+  return next();
 
   var whitelist = [
     '/',
-    
-    '/stylesheets/style.css',
     'favicon.ico',
-     '/users/login'
+     '/users/login',
+     '/users/register'
   ];
   if(whitelist.indexOf() !== -1){
       return next();
   }
+//allow acess to dynamic points
+var subs = [
+'/stylesheets/',
+'/src/',
+];
+for(var sub of subs){
+  if(req.url.substring(0, sub.length)===sub){
+  }
+}
 
-  if(reg.isAuthenticated()){
+
+
+  if(req.isAuthenticated()){
     return next();
   }
   return res.redirect('/users/login');
