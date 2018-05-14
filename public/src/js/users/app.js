@@ -1,5 +1,5 @@
 function viewIndex(){
-        var url = 'http://localhost:3000/api/users'
+        var url = 'http://loc.mean.example.com/api/users'
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url);
@@ -46,7 +46,7 @@ function viewIndex(){
 }     
 
 function viewUser(id){
-    var url = 'http://localhost:3000/api/users/' + id;
+    var url = 'http://loc.mean.example.com/api/users/' + id;
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
@@ -57,26 +57,14 @@ function viewUser(id){
         var user = data.user;
         var app = document.getElementById('app');
 
-        app.innerHTML = `
-        <h2>${user.last_name}, ${user.first_name}</h2>
-        <table>
-            <tbody>
-            <tr><th>ID</th><td>${user._id}</td></tr>
-            <tr><th>first name</th><td>${user.first_name}</td></tr>
-            <tr><th>last name</th><td>${user.last_name}</td></tr>
-            <tr><th>username</th><td>${user.username}</td></tr>
-            <tr><th>email</th><td>${user.email}</td></tr>
-             </tbody>
-         </table>
-         <h3>Edit the User Record</h3>
-         <form id="editUser" action="/api/users" method="put">
-             <input type="hidden" name="_id" value="${user._id}">
+        app.innerHTML = `<h2>create new user</h2>
+           <form id="createUser" action="/api/users" method="post">
              <div>
                  <label for="username">email</label>
                  <input type="text" 
                  name="email" 
                  id="email"
-                 value="${user.email}">
+                
              </div>
          
          <div>
@@ -84,7 +72,7 @@ function viewUser(id){
                  <input type="text"
                      name="first_name" 
                      id="first_name"
-                 value="${user.first_name}">
+            
              </div>
          
              <div>
@@ -92,17 +80,19 @@ function viewUser(id){
              <input type="text"
                  name="last_name" 
                  id="last_name"
-             value="${user.last_name}">
+             
          </div>
          <input type="submit" value="submit">
      </form>
      `;
 
+  
+
 var editUser = document.getElementById('editUser');
 editUser.addEventListener('submit', function(e){
     e.preventDefault();
     var formData = new FormData(editUser);
-    var url = 'http://localhost:3000/api/users';
+    var url = 'http://loc.mean.example.com/api/users';
     var xhr = new XMLHttpRequest();
     xhr.open('PUT', url);
     xhr.setRequestHeader(
@@ -116,9 +106,96 @@ editUser.addEventListener('submit', function(e){
 
     });
     xhr.send(JSON.stringify(object));
+    xhr.onload = function(){
+        let data = JSON.parse(xhr.response);
+        if(data.success===true){
+            viewIndex();
+        }
+        
+    }
 });
 
     }
 }
 
+
+function createUser(){
+    var app = document.getElementById('app');
+
+
+    app.innerHTML = `<h2>create new user</h2>
+
+           <form id="createUser" action="/api/users" method="post">
+           <div>
+           <label for="username">username</label>
+           <input type="text"
+               name="username" 
+               id="username"
+           
+       </div>
+             <div>
+                 <label for="username">email</label>
+                 <input type="text" 
+                 name="email" 
+                 id="email"
+                
+             </div>
+         
+         <div>
+                 <label for="username">first name</label>
+                 <input type="text"
+                     name="first_name" 
+                     id="first_name"
+            
+             </div>
+         
+             <div>
+             <label for="username">last name</label>
+             <input type="text"
+                 name="last_name" 
+                 id="last_name"
+             
+         </div>
+         <input type="submit" value="submit">
+     </form>
+     `;
+    var createUser = document.getElementById('createUser');
+    createUser.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    var formData = new FormData(createUser);
+    var url = 'http://loc.mean.example.com/api/users';
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', url);
+
+    xhr.setRequestHeader(
+        'content-Type',
+        'application/json; charset=UTF-8'
+    );
+
+    var object = {};
+    formData.forEach(function(value, key){
+        object[key]=value;
+    });
+    xhr.send(JSON.stringify(object));
+    xhr.onload = function(){
+        let data = JSON.parse(xhr.response);
+        if(data.success===true){
+            viewIndex();
+        }
+        
+    }
+
+});
+}
 viewIndex();
+var hash = window.location.hash.substr(1);
+
+if(hash){
+let chunks = hash.split('-');
+
+if(chuncks[0]=='#createUser'){
+    createUser();
+}
+
+}
