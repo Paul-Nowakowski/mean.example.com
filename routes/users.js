@@ -4,7 +4,7 @@ var User = require('../models/user');
 var bodyParser = require('body-parser');
 
 
-
+var passport = require('passport');
 router.get('/', function(req, res, next) {
   
   res.render('users/index', { title: 'Create an Account' });
