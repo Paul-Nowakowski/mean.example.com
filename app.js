@@ -106,6 +106,7 @@ app.use(function(req,res,next){
 var subs = [
 '/stylesheets/',
 '/src/',
+'/ionic/'
 ];
 for(var sub of subs){
   if(req.url.substring(0, sub.length)===sub){
