@@ -31,6 +31,9 @@ router.get('/:slug', function(req,res){
 
     return res.json({'success':true, 'article': article});
 
+    res.render('articles/view'),{
+      'article': article
+    }
   });
 
 });
