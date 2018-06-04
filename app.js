@@ -26,7 +26,7 @@ app.use(helmet());
 if(process.env.NODE_ENV_==='production'){
   var config = require('../config.prod');
 }else{
-  //var config = require('./config.dev');
+  var config = require('./config.dev');
 }
 
 
@@ -98,7 +98,9 @@ app.use(function(req,res,next){
     '/',
     'favicon.ico',
      '/users/login',
-     '/users/register'
+     '/users/register',
+     '/articles',
+    '/api/users/register'
   ];
   if(whitelist.indexOf() !== -1){
       return next();
@@ -107,6 +109,7 @@ app.use(function(req,res,next){
 var subs = [
 '/stylesheets/',
 '/src/',
+'/articles'
 
 ];
 for(var sub of subs){
