@@ -1,17 +1,16 @@
+//Libs
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var session = require('express-session');
-var helmet = require('helmet');
+var session = require('express-session'); 
 var mongoose = require('mongoose');
 var compression = require('compression');
-//models
+var helmet = require('helmet');
 
-
+//Models
 var User = require('./models/user');
-
 
 //Routes
 var indexRouter = require('./routes/index');
@@ -22,13 +21,13 @@ var apiUsersRouter = require('./routes/api/users');
 var app = express();
 app.use(compression());
 app.use(helmet());
+
 //call the config file
-if(process.env.NODE_ENV_==='production'){
+if(process.env.NODE_ENV==='production'){
   var config = require('../config.prod');
 }else{
-  var config = require('../config.prod');
+  var config = require('./config.dev');
 }
-
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -37,6 +36,7 @@ var LocalStrategy = require('passport-local').Strategy;
 mongoose.connect(config.mongodb);
 
 var MongoStore = require('connect-mongo')(session);
+
 app.use(require('express-session')({
   store: new MongoStore({
     mongooseConnection: mongoose.connection
@@ -49,13 +49,12 @@ app.use(require('express-session')({
     domain: config.cookie.domain,
     //httpOnly: true,
     //secure: true,
-    maxAge: 60 * 60 * 24 //24 hours
-
+    maxAge: 60 * 60 * 24 * 1000 //24 hours
   }*/
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 passport.use(User.createStrategy());
 
@@ -66,75 +65,77 @@ passport.serializeUser(function(user, done){
     email: user.email,
     first_name: user.first_name,
     last_name: user.last_name
-
   });
 });
+
 passport.deserializeUser(function(user, done){
   done(null, user);
 });
 
+//Set up view variables
 app.use(function(req, res, next){
 
   var userSession={};
 
-if(req.isAuthenticated()){
-userSession = req.session.passport.user;
-}
-req.app.locals = {
-  session: {
-    user: userSession
+  if(req.isAuthenticated()){
+    userSession = req.session.passport.user;
   }
-}
 
+  req.app.locals = {
+    session: {
+      user: userSession
+    }
+  }
 
-next();
+  next();
 });
 
 //Session based access control
 app.use(function(req,res,next){
   //return next();
-
   var whitelist = [
     '/',
-    'favicon.ico',
-     '/users/login',
-     '/users/register',
-     '/articles',
-    '/api/users/register'
+    '/favicon.ico',
+    '/users/login',
+    '/users/register',
+    '/api/users/register',
+    '/articles'
   ];
-  if(whitelist.indexOf() !== -1){
-      return next();
-  }
-//allow acess to dynamic points
-var subs = [
-'/stylesheets/',
-'/src/',
-'/articles'
 
-];
-for(var sub of subs){
-  if(req.url.substring(0, sub.length)===sub){
-  }
-}
-
-if(req.isAuthenticated()){
+  if(whitelist.indexOf(req.url) !== -1){
     return next();
   }
 
+  //Allow access to dynamic end points
+  var subs = [
+    '/stylesheets/',
+    '/src/',
+    '/articles/'
+  ];
+
+  for(var sub of subs){
+    if(req.url.substring(0, sub.length)===sub){
+      return next();
+    }
+  }
+
+  if(req.isAuthenticated()){
+    return next();
+  }
 
   return res.redirect('/users/login');
 });
-//setup cors
+
+//SETUP CORS
 app.use(function(req,res,next){
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With,X-HTTP-Method-Override, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
   if( 'OPTIONS' == req.method){
     res.send(200);
   }else{
     next();
-  
   }
 });
 
