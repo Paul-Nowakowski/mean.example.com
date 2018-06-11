@@ -18,6 +18,7 @@ var usersRouter = require('./routes/users');
 var articlesRouter = require('./routes/articles');
 var apiArticlesRouter = require('./routes/api/articles');
 var apiUsersRouter = require('./routes/api/users');
+var apiCarsRouter = require('./routes/api/cars');
 var app = express();
 app.use(compression());
 app.use(helmet());
@@ -154,7 +155,7 @@ app.use('/users', usersRouter);
 app.use('/articles', articlesRouter);
 app.use('/api/articles', apiArticlesRouter);
 app.use('/api/users', apiUsersRouter);
-
+app.use('/api/cars', apiCarsRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
